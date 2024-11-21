@@ -37,7 +37,7 @@ requirements:
 # assert os.environ.get("http_proxy") is None
 {% set deselect_tests = deselect_tests + " --deselect=tests/test_proxy.py::test_from_env_https" %}  # [win]
 # AssertionError: assert 408 == 200
-{% set deselect_tests = deselect_tests + " --deselect=tests/test_other.py::test_timeout_subsequent" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_other.py::test_timeout_subsequent" %}  # [win or osx-64]
 # ZeroDivisionError: float division by zero
 {% set deselect_tests = deselect_tests + " --deselect=tests/test_auth.py::test_parse_www_authenticate_complexity" %}  # [win]
 # ZeroDivisionError: float division by zero
