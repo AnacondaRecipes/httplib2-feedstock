@@ -27,9 +27,9 @@ requirements:
 # Wont fix. Needs reastimation.
 {% set deselect_tests = "" %}
 # raise socket.gaierror(socket.EAI_NONAME, "Name or service not known")
-{% set deselect_tests = deselect_tests + " --deselect=tests/test_proxy.py::test_server_not_found_error_is_raised_for_invalid_hostname" %}  # [linux or osx or win]
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_proxy.py::test_server_not_found_error_is_raised_for_invalid_hostname" %}
 # ConnectionResetError: [Errno 54] Connection reset by peer
-{% set deselect_tests = deselect_tests + " --deselect=tests/test_proxy.py::test_socks5_auth" %}  # [linux or osx or win]
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_proxy.py::test_socks5_auth" %}
 # ConnectionResetError: [Errno 54] Connection reset by peer
 {% set deselect_tests = deselect_tests + " --deselect=tests/test_other.py::test_connection_close" %}  # [win or osx]
 # assert os.environ.get("http_proxy") is None
