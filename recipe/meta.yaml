@@ -1,42 +1,81 @@
 {% set name = "httplib2" %}
-{% set version = "0.19.1" %}
-
+{% set version = "0.22.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/httplib2-{{ version }}.tar.gz
-  sha256: 0b12617eeca7433d4c396a100eaecfa4b08ee99aa881e6df6e257a7aad5d533d
+  url: https://github.com/{{ name }}/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: f0463bc04d2546325eaba1da15f8e45763ed2a52b47c0331c721f1c85470c9ca
 
 build:
   number: 0
-  noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  skip: True  # [py<39]
 
 requirements:
   host:
-    - python >=3
+    - python
     - pip
-    - pytest
+    - setuptools >=40.8.0
+    - wheel
   run:
-    - python >=3
-    - pyparsing >=2.4.2,<3
+    - python
+    - pyparsing >=2.4.2,<4
+
+# Wont fix. Needs reastimation.
+{% set deselect_tests = "" %}
+# raise socket.gaierror(socket.EAI_NONAME, "Name or service not known")
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_proxy.py::test_server_not_found_error_is_raised_for_invalid_hostname" %}
+# ConnectionResetError: [Errno 54] Connection reset by peer
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_proxy.py::test_socks5_auth" %}
+# ConnectionResetError: [Errno 54] Connection reset by peer
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_other.py::test_connection_close" %}  # [win or osx]
+# assert os.environ.get("http_proxy") is None
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_proxy.py::test_from_env" %}  # [win]
+# assert os.environ.get("http_proxy") is None
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_proxy.py::test_from_env_https" %}  # [win]
+# AssertionError: assert 408 == 200
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_other.py::test_timeout_subsequent" %}  # [win or osx-64]
+# ZeroDivisionError: float division by zero
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_auth.py::test_parse_www_authenticate_complexity" %}  # [win]
+# ZeroDivisionError: float division by zero
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_cacerts_from_env.py::test_with_certifi_removed_from_modules" %}  # [win]
+# ZeroDivisionError: float division by zero
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_cacerts_from_env.py::test_certs_file_from_environment" %}  # [win]
+# ConnectionResetError: [WinError 10054] An existing connection was forcibly closed by the remote host
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_https.py::test_not_trusted_ca" %}  # [win]
 
 test:
+  source_files:
+    - tests
   imports:
     - httplib2
   commands:
     - pip check
+    - pytest -v --ignore=tests/_TODO_legacy/python2 {{ deselect_tests }} tests
   requires:
     - pip
+    - pytest
+    - cryptography
+    - six
+    - nose
+    - responses
+    - future
+    - pytest-forked
+    - pytest-randomly
+    - pytest-timeout
 
 about:
   home: https://github.com/httplib2/httplib2
   license: MIT
   license_file: LICENSE
+  license_family: MIT
   summary: A comprehensive HTTP client library
+  description: A comprehensive HTTP client library, httplib2 supports many features left out of other HTTP libraries.
+  doc_url: https://httplib2.readthedocs.io
+  dev_url: https://github.com/httplib2/httplib2
 
 extra:
   recipe-maintainers:
