@@ -44,6 +44,8 @@ requirements:
 {% set deselect_tests = deselect_tests + " --deselect=tests/test_cacerts_from_env.py::test_with_certifi_removed_from_modules" %}  # [win]
 # ZeroDivisionError: float division by zero
 {% set deselect_tests = deselect_tests + " --deselect=tests/test_cacerts_from_env.py::test_certs_file_from_environment" %}  # [win]
+# ConnectionResetError: [WinError 10054] An existing connection was forcibly closed by the remote host
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_https.py::test_not_trusted_ca" %}  # [win]
 
 test:
   source_files:
